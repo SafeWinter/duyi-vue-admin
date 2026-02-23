@@ -13,7 +13,7 @@
       <el-tag class="tag-title">
         Basic:
       </el-tag>
-      <markdown-editor v-model="content1" height="300px" />
+      <markdown-editor v-model="content1" height="300px" width="800px" />
     </div>
 
     <div class="editor-container">
