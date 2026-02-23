@@ -11,6 +11,7 @@
         :active-text-color="variables.menuActiveText"
         :collapse-transition="false"
         mode="vertical"
+        :default-openeds="['/article', '/project']"
       >
         <sidebar-item v-for="route in routes" :key="route.path" :item="route" :base-path="route.path" />
       </el-menu>
