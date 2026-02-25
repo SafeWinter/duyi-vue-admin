@@ -1,0 +1,39 @@
+{
+  "name": "my-site",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "serve": "vue-cli-service serve --open",
+    "build": "vue-cli-service build --modern",
+    "preview:Pager": "vue serve ./src/components/Pager/preview.vue",
+    "preview:Avatar": "vue serve ./src/components/Avatar/preview.vue",
+    "preview:Icon": "vue serve ./src/components/Icon/preview.vue",
+    "preview:Empty": "vue serve ./src/components/Empty/preview.vue",
+    "preview:ImageLoader": "vue serve ./src/components/ImageLoader/preview.vue",
+    "preview:Contact": "vue serve ./src/components/SiteAside/Contact/preview.vue",
+    "preview:ContactItem": "vue serve ./src/components/SiteAside/Contact/ContactItem/preview.vue",
+    "preview:Menu": "vue serve ./src/components/SiteAside/Menu/preview.vue",
+    "preview:SiteAside": "vue serve ./src/components/SiteAside/preview.vue",
+    "preview:Layout": "vue serve ./src/components/Layout/preview.vue",
+    "preview:HierarchyList": "vue serve ./src/views/Blog/components/HierarchyList/preview.vue"
+  },
+  "dependencies": {
+    "axios": "^0.21.0",
+    "core-js": "^3.6.5",
+    "highlight.js": "^11.11.1",
+    "mockjs": "^1.1.0",
+    "nprogress": "^0.2.0",
+    "querystring": "^0.2.0",
+    "vue": "^2.6.11",
+    "vue-router": "^3.4.9",
+    "vuex": "^3.6.2"
+  },
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "~4.5.0",
+    "@vue/cli-service": "~4.5.0",
+    "less": "^3.0.4",
+    "less-loader": "^5.0.0",
+    "vue-template-compiler": "^2.6.11",
+    "webpack-bundle-analyzer": "^5.2.0"
+  }
+}
