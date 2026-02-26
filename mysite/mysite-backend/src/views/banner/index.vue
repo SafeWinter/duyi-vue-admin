@@ -1,78 +1,121 @@
 <template>
-  <el-table class="app-container" :data="tableData" stripe style="width: 100%">
-    <el-table-column prop="id" label="序号" width="60" :align="align">
-      <template slot-scope="scope">
-        <span>{{ scope.$index + 1 }}</span>
-      </template>
-    </el-table-column>
-    <el-table-column prop="title" label="标题" width="150" :align="align"></el-table-column>
-    <el-table-column prop="description" label="描述"></el-table-column>
-    <el-table-column label="中图预览" :align="align">
-      <template slot-scope="scope">
-        <el-image
-          :src="scope.row.midImg2"
-          style="width: 100px"
-          fit="fill"
-        ></el-image>
-      </template>
-    </el-table-column>
-    <el-table-column label="大图预览" :align="align">
-      <template slot-scope="scope">
-        <el-image
-          :src="scope.row.bigImg2"
-          style="width: 100px"
-          fit="fill"
-        ></el-image>
-      </template>
-    </el-table-column>
-    <el-table-column label="操作" :align="align">
-      <template>
-        <el-tooltip
-          class="item"
-          effect="dark"
-          content="编辑"
-          placement="top"
-          :hide-after="hideAfter"
-        >
-          <el-button type="primary" icon="el-icon-edit" circle size="mini"></el-button>
-        </el-tooltip>
-      </template>
-    </el-table-column>
-  </el-table>
+  <div class="app-container">
+    <el-table :data="tableData" stripe style="width: 100%">
+      <el-table-column prop="id" label="序号" width="60" align="center">
+        <template slot-scope="scope">
+          <span>{{ scope.$index + 1 }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column
+        prop="title"
+        label="标题"
+        width="150"
+        align="center"
+      />
+      <el-table-column prop="description" label="描述" />
+      <el-table-column label="中图预览" align="center" width="300">
+        <template slot-scope="scope">
+          <el-image
+            :src="scope.row.midImg"
+            style="width: 100px"
+            fit="fill"
+          />
+        </template>
+      </el-table-column>
+      <el-table-column label="大图预览" align="center" width="300">
+        <template slot-scope="scope">
+          <el-image
+            :src="scope.row.bigImg"
+            style="width: 100px"
+            fit="fill"
+          />
+        </template>
+      </el-table-column>
+      <el-table-column label="操作" align="center" width="120">
+        <template slot-scope="item">
+          <el-tooltip
+            class="item"
+            effect="dark"
+            content="编辑"
+            placement="top"
+            :hide-after="hideAfter"
+          >
+            <el-button
+              type="primary"
+              icon="el-icon-edit"
+              circle
+              size="mini"
+              @click="editBanner(item.row)"
+            />
+          </el-tooltip>
+        </template>
+      </el-table-column>
+    </el-table>
+    <!-- edit dialogue -->
+    <banner-edit
+      :data="banner"
+      :visible="editVisible"
+      @visibleChange="toggleVisibility"
+      @submit="handleSubmit"
+    />
+  </div>
 </template>
 
 <script>
-import { fetchBanner } from "@/api/banner";
-import { server_URL } from "@/urlConfig";
+import { fetchBanner, postBanner } from '@/api/banner'
+import BannerEdit from './edit.vue'
 
 export default {
-  name: "Banner",
+  name: 'Banner',
+  components: {
+    BannerEdit
+  },
   data() {
     return {
       tableData: [],
       hideAfter: 2000, // ms
-      align: "center",
-    };
+      editVisible: false,
+      banner: {}
+    }
   },
   created() {
-    this.getBanner();
+    this.getBanner()
   },
   methods: {
     async getBanner() {
       try {
-        const { data } = await fetchBanner();
-        console.log(data); // {bigImg, description, id, midImg, title}
-        this.tableData = data;
-        this.tableData.forEach((item) => {
-          item.midImg2 = server_URL + item.midImg; // /static/upload/xxx.jpg
-          item.bigImg2 = server_URL + item.bigImg;
-        });
+        const { data } = await fetchBanner()
+        console.log(data) // {bigImg, description, id, midImg, title}
+        this.tableData = data
       } catch (error) {
-        this.$message.error(`获取数据失败: ${error.message}`);
+        this.$message.error(`获取数据失败: ${error.message}`)
       }
     },
-  },
-};
+    editBanner(data) {
+      // console.log('oldBanner:', data)
+      this.banner = { ...data }
+      this.editVisible = true
+    },
+    toggleVisibility(visible) {
+      this.editVisible = visible
+    },
+    handleSubmit(newBanner) {
+      // console.log('newBanner:', newBanner)
+      const index = this.tableData.findIndex(e => e.id === newBanner.id)
+      if (index === -1) {
+        this.$message.error('未找到对应的 Banner')
+        return
+      }
+      this.tableData[index] = { ...newBanner }
+      postBanner(this.tableData).then(res => {
+        console.log(res) // {code: 0, msg: '', data: ['url1', 'url2', 'url3']}
+        this.editVisible = false
+        this.$message.success('上传成功')
+        this.getBanner() // 刷新表格数据
+      })
+    }
+  }
+}
 </script>
 
 <style lang="sass" scoped></style>

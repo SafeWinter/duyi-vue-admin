@@ -64,142 +64,143 @@
             auto-complete="on"
           />
         </el-form-item>
-        <div class="captcha-img" @click="updateCaptcha" v-html="captcha"></div>
+        <div class="captcha-img" @click="updateCaptcha" v-html="captcha" />
       </div>
-      <el-checkbox v-model="rememberMe" class="remember-me"
-        >7 天内免登录</el-checkbox
-      >
+      <el-checkbox
+        v-model="rememberMe"
+        class="remember-me"
+      >7 天内免登录</el-checkbox>
       <el-button
         :loading="loading"
         type="primary"
         style="width: 100%; margin-bottom: 30px; letter-spacing: 1.5em"
         @click.native.prevent="handleLogin"
-        >登录</el-button
-      >
+      >登录</el-button>
     </el-form>
   </div>
 </template>
 
 <script>
-import { getCaptcha } from "@/api/captcha";
+import { getCaptcha } from '@/api/captcha'
 
 export default {
-  name: "Login",
+  name: 'Login',
   data() {
     const requiredField = ({ message, required }, value, callback) => {
       if (required && !value) {
-        callback(new Error(message));
+        callback(new Error(message))
       } else {
-        callback();
+        callback()
       }
-    };
+    }
 
     return {
       loginForm: {
-        loginId: "",
-        loginPwd: "",
+        loginId: '',
+        loginPwd: ''
       },
       loginRules: {
         loginId: [
           {
             required: true,
-            trigger: "blur",
+            trigger: 'blur',
             validator: requiredField,
-            message: "请输入管理员帐号",
-          },
+            message: '请输入管理员帐号'
+          }
         ],
         loginPwd: [
           {
             required: true,
-            trigger: "blur",
+            trigger: 'blur',
             validator: requiredField,
-            message: "请输入登录密码",
+            message: '请输入登录密码'
           },
           {
             min: 6,
             max: 20,
-            trigger: "blur",
-            message: "登录密码长度必须在 6 - 20 之间",
-          },
+            trigger: 'blur',
+            message: '登录密码长度必须在 6 - 20 之间'
+          }
         ],
         captcha: [
           {
             required: true,
-            trigger: "blur",
+            trigger: 'blur',
             validator: requiredField,
-            message: "请输入验证码",
-          },
-        ],
+            message: '请输入验证码'
+          }
+        ]
       },
       loading: false,
-      passwordType: "password",
+      passwordType: 'password',
       redirect: undefined,
-      captcha: "",
-      rememberMe: false,
-    };
+      captcha: '',
+      rememberMe: false
+    }
   },
   watch: {
     $route: {
-      handler: function (route) {
-        this.redirect = route.query && route.query.redirect;
+      handler: function(route) {
+        this.redirect = route.query && route.query.redirect
       },
-      immediate: true,
-    },
+      immediate: true
+    }
   },
   created() {
-    this.updateCaptcha();
+    this.updateCaptcha()
   },
   methods: {
     updateCaptcha() {
       getCaptcha().then((captcha) => {
-        this.captcha = captcha;
-      });
+        this.captcha = captcha
+      })
     },
     showPwd() {
-      if (this.passwordType === "password") {
-        this.passwordType = "";
+      if (this.passwordType === 'password') {
+        this.passwordType = ''
       } else {
-        this.passwordType = "password";
+        this.passwordType = 'password'
       }
       this.$nextTick(() => {
-        this.$refs.loginPwd.focus();
-      });
+        this.$refs.loginPwd.focus()
+      })
     },
     handleLogin() {
       this.$refs.loginForm.validate((valid) => {
-        if(!valid) {
-          console.log("error submit!!");
-          return false;
+        if (!valid) {
+          console.log('error submit!!')
+          return false
         }
 
         // pass validation, handle login
-        this.loading = true;
-        const loginData = {...this.loginForm}
+        this.loading = true
+        const loginData = { ...this.loginForm }
         if (this.rememberMe) {
-          loginData.remember = 7;
+          loginData.remember = 7
         }
 
-        this.$store.dispatch("user/login", loginData)
+        this.$store
+          .dispatch('user/login', loginData)
           .then(() => {
-            this.loading = false;
+            this.loading = false
             this.$router.push({ path: this.redirect || '/' })
-            this.$message.success('登录成功！');
+            this.$message.success('登录成功！')
           })
           .catch((errMsg) => {
-            this.loading = false;
-            this.$message.error(errMsg);
-            this.resetForm();
-          });
-      });
+            this.loading = false
+            this.$message.error(errMsg)
+            this.resetForm()
+          })
+      })
     },
     resetForm() {
-      this.loginForm.captcha = '';
-      this.loginForm.loginId = '';
-      this.loginForm.loginPwd = '';
-      this.updateCaptcha();
+      this.loginForm.captcha = ''
+      this.loginForm.loginId = ''
+      this.loginForm.loginPwd = ''
+      this.updateCaptcha()
     }
-  },
-};
+  }
+}
 </script>
 
 <style lang="scss">

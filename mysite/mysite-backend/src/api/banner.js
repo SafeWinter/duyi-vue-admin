@@ -6,3 +6,11 @@ export function fetchBanner() {
     method: 'get'
   })
 }
+
+export function postBanner(banners) {
+  return request({
+    url: '/api/banner',
+    method: 'post',
+    data: banners
+  })
+}

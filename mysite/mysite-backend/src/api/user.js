@@ -11,7 +11,7 @@ export function userLogin(data) {
 export function getInfo() {
   return request({
     url: '/api/admin/whoami',
-    method: 'get',
+    method: 'get'
   })
 }
 

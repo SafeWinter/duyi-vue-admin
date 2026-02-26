@@ -1,5 +1,5 @@
 import { userLogin, getInfo } from '@/api/user'
-import { getToken, setToken, removeToken } from '@/utils/auth'
+import { getToken, removeToken } from '@/utils/auth'
 import { resetRouter } from '@/router'
 
 const getDefaultState = () => {
@@ -7,7 +7,7 @@ const getDefaultState = () => {
     token: getToken(),
     name: '',
     avatar: '',
-    user: null  // newly added
+    user: null // newly added
   }
 }
 
@@ -27,7 +27,7 @@ const mutations = {
     state.avatar = avatar
   },
   SET_USER: (state, user) => {
-    state.user = user;
+    state.user = user
   }
 }
 
@@ -37,25 +37,24 @@ const actions = {
     return new Promise((resolve, reject) => {
       userLogin(loginParams).then(resp => {
         // console.log(typeof resp, resp);
-        if(typeof resp === 'string') {
+        if (typeof resp === 'string') {
           // invalid captcha
-          reject(JSON.parse(resp).msg);  // resp: '{"code":406,"msg":"验证码错误","data":null}'
-          return;
+          reject(JSON.parse(resp).msg) // resp: '{"code":406,"msg":"验证码错误","data":null}'
+          return
         }
-        
-        if(!resp.data) { // resp: {code: 0, msg: '', data: null}
+
+        if (!resp.data) { // resp: {code: 0, msg: '', data: null}
           // invalid loginId / loginPwd
-          reject('用户名或密码错误！');
-          return;
+          reject('用户名或密码错误！')
+          return
         }
 
         // resp: {code: 0, msg: '', data: {id:'xxxx', loginId: 'admin', name: '管理员'}}
-        const { data } = resp;
-        commit('SET_USER', data);
-        commit('SET_NAME', data.name);
+        const { data } = resp
+        commit('SET_USER', data)
+        commit('SET_NAME', data.name)
         commit('SET_AVATAR', 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif')
-        resolve();
-
+        resolve()
       }).catch(reject)
     })
   },
@@ -64,9 +63,9 @@ const actions = {
   getInfo({ commit }) {
     return new Promise((resolve, reject) => {
       getInfo().then(response => {
-        console.log('data fetched from whoami API:', response);
+        console.log('data fetched from whoami API:', response)
         const { data } = response
-        
+
         if (!data) {
           return reject('Token 校验失败，请重新登录！')
         }
@@ -75,7 +74,7 @@ const actions = {
 
         commit('SET_NAME', name)
         commit('SET_AVATAR', 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif')
-        resolve(data);
+        resolve(data)
       }).catch(reject)
     })
   },
