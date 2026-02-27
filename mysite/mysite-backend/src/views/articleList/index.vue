@@ -36,7 +36,7 @@
       <el-table-column prop="commentNumber" label="评论量" align="center" />
       <el-table-column prop="category" label="所属分类" align="center">
         <template v-slot="{ row }">
-          <span>{{ row.category.name }}</span>
+          <span>{{ (!!row.category) ? row.category.name : '未分类' }}</span>
         </template>
       </el-table-column>
       <el-table-column
