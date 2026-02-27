@@ -93,23 +93,23 @@
       :current-page.sync="page"
       :page-size="limit"
       :page-sizes="sizes"
+      :style="{ marginTop: '20px' }"
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
-      :style="{ marginTop: '20px' }"
     />
   </div>
 </template>
 
 <script>
-import { getList, deleteArticle } from "@/api/blog";
-import { parseTime } from "@/utils";
-import { fe_URL } from "@/config";
-const formatDate = ts => parseTime(ts, "{y}-{m}-{d} {h}:{i}:{s} 星期{a}");
+import { getList, deleteArticle } from '@/api/blog'
+import { parseTime } from '@/utils'
+import { fe_URL } from '@/config'
+const formatDate = ts => parseTime(ts, '{y}-{m}-{d} {h}:{i}:{s} 星期{a}')
 
 export default {
-  name: "ArticleList",
+  name: 'ArticleList',
   filters: {
-    formatDate,
+    formatDate
   },
   data() {
     return {
@@ -121,83 +121,83 @@ export default {
       limit: 10,
       sizes: [5, 10, 20],
       tempUrl: 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg'
-    };
-  },
-  created() {
-    this.getBlogList();
+    }
   },
   computed: {
     totalPage() {
-      if(this.total === 0) return 0;
-      return Math.ceil(this.total / this.limit);
+      if (this.total === 0) return 0
+      return Math.ceil(this.total / this.limit)
     },
     currCount() {
-      return this.tableData.length;
+      return this.tableData.length
     },
     prevCount() {
-      return (this.page - 1) * this.limit;
+      return (this.page - 1) * this.limit
     }
+  },
+  created() {
+    this.getBlogList()
   },
   methods: {
     handleCurrentChange(newPage) {
-      this.page = newPage;
-      this.getBlogList();
+      this.page = newPage
+      this.getBlogList()
     },
     handleSizeChange(newLimit) {
-      this.limit = newLimit;
-      this.page = 1;
-      this.getBlogList();
+      this.limit = newLimit
+      this.page = 1
+      this.getBlogList()
     },
     targetUrl({ id }) {
-      return `${fe_URL}/blog/${id}`;
+      return `${fe_URL}/blog/${id}`
     },
     async getBlogList() {
-      this.loading = true;
-      const { data } = await getList(this.page, this.limit);
-      this.loading = false;
+      this.loading = true
+      const { data } = await getList(this.page, this.limit)
+      this.loading = false
       // console.log(data); // {rows, total}
       // 临时渲染图片，后续需要替换为后端返回的图片 URL
-      data.rows.forEach(r => r.thumb = this.tempUrl)
+      data.rows.forEach(r => { r.thumb = this.tempUrl })
 
-      this.tableData = [...data.rows];
-      this.total = data.total;
+      this.tableData = [...data.rows]
+      this.total = data.total
     },
     deleteArticle({ id }) {
-      this.$confirm("此操作将永久删除该文件, 是否继续?", "提示", {
-        type: "warning",
+      this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+        type: 'warning'
       })
         .then(() => {
           // console.log("delete id:", id);
-          this.loading = true;
+          this.loading = true
           deleteArticle(id)
-            .then(async () => {
-              await this.getBlogList();
-              this.loading = false;
-              this.$message.success("删除成功!");
+            .then(async() => {
+              await this.getBlogList()
+              this.loading = false
+              this.$message.success('删除成功!')
 
               // 当前页仅剩一条数据，删除后会导致当前页没有数据，此时需要让页码回退到上一页
-              if(this.currCount === 0) {
-                console.log('running edge case');
-                this.page = this.totalPage;
-                this.loading = true;
-                await this.getBlogList();
-                this.loading = false;
+              if (this.currCount === 0) {
+                console.log('running edge case')
+                this.page = this.totalPage
+                this.loading = true
+                await this.getBlogList()
+                this.loading = false
               }
             })
             .catch((err) => {
-              this.$message.error(`删除失败! ${err.message}`);
-              this.loading = false;
-            });
+              this.$message.error(`删除失败! ${err.message}`)
+              this.loading = false
+            })
         })
         .catch(() => {
-          this.$message.info("已取消删除");
-        });
+          this.$message.info('已取消删除')
+        })
     },
     editArticle(row) {
-      this.$message.info(`编辑文章: ${row.title}`);
-    },
-  },
-};
+      this.$message.info(`编辑文章: ${row.title}`)
+    }
+  }
+}
 </script>
 
 <style lang="sass" scoped></style>
