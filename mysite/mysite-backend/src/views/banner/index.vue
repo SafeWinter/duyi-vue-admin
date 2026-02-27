@@ -2,7 +2,7 @@
   <div class="app-container">
     <el-table :data="tableData" stripe style="width: 100%">
       <el-table-column prop="id" label="序号" width="60" align="center">
-        <template slot-scope="scope">
+        <template v-slot="scope">
           <span>{{ scope.$index + 1 }}</span>
         </template>
       </el-table-column>
@@ -14,25 +14,25 @@
       />
       <el-table-column prop="description" label="描述" />
       <el-table-column label="中图预览" align="center" width="300">
-        <template slot-scope="scope">
+        <template v-slot="{row}">
           <el-image
-            :src="scope.row.midImg"
+            :src="row.midImg"
             style="width: 100px"
             fit="fill"
           />
         </template>
       </el-table-column>
       <el-table-column label="大图预览" align="center" width="300">
-        <template slot-scope="scope">
+        <template v-slot="{row}">
           <el-image
-            :src="scope.row.bigImg"
+            :src="row.bigImg"
             style="width: 100px"
             fit="fill"
           />
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" width="120">
-        <template slot-scope="item">
+        <template v-slot="{row}">
           <el-tooltip
             class="item"
             effect="dark"
@@ -45,7 +45,7 @@
               icon="el-icon-edit"
               circle
               size="mini"
-              @click="editBanner(item.row)"
+              @click="editBanner(row)"
             />
           </el-tooltip>
         </template>

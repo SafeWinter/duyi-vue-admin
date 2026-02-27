@@ -63,7 +63,7 @@ const actions = {
   getInfo({ commit }) {
     return new Promise((resolve, reject) => {
       getInfo().then(response => {
-        console.log('data fetched from whoami API:', response)
+        // console.log('data fetched from whoami API:', response)
         const { data } = response
 
         if (!data) {

@@ -23,8 +23,8 @@ router.beforeEach(async(to, from, next) => {
   const userInfo = store.getters.user
   // console.log('store user', store.getters.user);
   const isLogin = !!(userInfo && userInfo.loginId)
-  console.log('userInfo:', userInfo)
-  console.log('isLogin:', isLogin)
+  // console.log('userInfo:', userInfo)
+  // console.log('isLogin:', isLogin)
 
   const needAuth = to.meta.auth
 
