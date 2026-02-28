@@ -41,7 +41,7 @@
       </el-form-item>
 
       <el-form-item>
-        <el-button type="primary" @click="submitForm">发布文章</el-button>
+        <el-button type="primary" @click="submitForm">{{ label }}</el-button>
       </el-form-item>
     </el-form>
   </div>
@@ -53,13 +53,20 @@ import '@toast-ui/editor/dist/i18n/zh-cn'
 import { Editor } from '@toast-ui/vue-editor'
 import Upload from '@/components/Upload'
 import { getBlogCategories } from '@/api/blogCategory'
-import { addBlog } from '@/api/blog'
+import { addBlog, editBlog, getBlogDetail } from '@/api/blog'
+import { checkImage } from '@/utils'
 
 export default {
-  name: 'ArticleAdd',
+  name: 'ArticleDetail',
   components: {
     Editor,
     Upload
+  },
+  props: {
+    mode: {
+      type: String,
+      default: 'add' // add | edit
+    }
   },
   data() {
     return {
@@ -82,23 +89,68 @@ export default {
       }
     }
   },
+  computed: {
+    label() {
+      return this.mode === 'add' ? '发布文章' : '修改文章'
+    },
+    thumb() {
+      return this.mode === 'add' ? '' : 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg'
+    },
+    addMode() {
+      return this.mode === 'add'
+    }
+  },
   created() {
     this.fetchCategories()
+    if (!this.addMode) {
+      this.loadBlogDetail()
+    }
   },
   methods: {
+    loadBlogDetail() {
+      const blogId = this.$route.params.id
+      if (blogId) {
+        this.loading = true
+        getBlogDetail(blogId)
+          .then(async(res) => {
+            // console.log(res, 'blog detail') // {code: 0, msg: '', data: {id: 'xxx', title: '', content: '', description: '', thumb: '', categoryId: 'xxx'}}
+            const blogData = res.data
+            this.data.title = blogData.title
+            this.data.description = blogData.description
+            const validImg = await checkImage(blogData.thumb)
+            this.data.thumb = validImg ? blogData.thumb : this.thumb
+            // load categoryId if exists
+            if (blogData.category && blogData.category.id) {
+              this.data.categoryId = blogData.category.id
+            } else {
+              this.data.categoryId = null
+            }
+            this.data.createDate = blogData.createDate
+            // this.data.content = blogData.htmlContent;  // 由于无法转为 Markdown 格式，这里不能直接赋值给 data.content
+            // setHTML(html, cursorToEnd) 第二个参数表示是否将光标移动到内容末尾
+            this.$refs.toastuiEditor.invoke('setHTML', blogData.htmlContent, false)
+          })
+          .catch((err) => {
+            console.error(err)
+            this.$message.error('加载文章详情失败:' + err.message)
+          })
+          .finally(() => {
+            this.loading = false
+          })
+      }
+    },
     async fetchCategories() {
       const res = await getBlogCategories()
-      // console.log(res, "res"); // {code: 0, msg: '', data: [{name: 'CSS', order: 1, articleCount: 1, id: 'xxx'}]}
       this.categories = res.data
     },
     submitForm() {
       this.$refs.blogForm.validate((valid) => {
-        if (valid) {
-          this.publishArticle()
-        } else {
+        if (!valid) {
           this.$message.error('请完善表单信息')
           return false
         }
+
+        this.publishArticle()
       })
     },
     publishArticle() {
@@ -111,7 +163,7 @@ export default {
         htmlContent: '',
         thumb: ''
       } */
-      console.log('文章数据:', this.data)
+      // console.log('文章数据:', this.data)
       const params = {
         title: this.data.title,
         description: this.data.description,
@@ -121,16 +173,44 @@ export default {
         // 后台将根据 markdownContent 生成 toc
         markdownContent: this.$refs.toastuiEditor.invoke('getMarkdown')
       }
+
+      if (this.addMode) {
+        this.addArtical(params)
+      } else {
+        this.editArtical({
+          ...params,
+          id: this.$route.params.id,
+          createDate: new Date().getTime()
+        })
+      }
+    },
+    addArtical(params) {
       this.loading = true
       addBlog(params)
         .then((res) => {
-          console.log(res, 'article result') // {code: 0, msg: '', data: {id: 'xxx'}}
+          // console.log(res, 'article result') // {code: 0, msg: '', data: {id: 'xxx'}}
           this.$message.success('文章发布成功')
           this.$router.push('/article/list')
         })
         .catch((err) => {
           console.error(err)
           this.$message.error('文章发布失败:' + err.message)
+        })
+        .finally(() => {
+          this.loading = false
+        })
+    },
+    editArtical(params) {
+      this.loading = true
+      editBlog(params)
+        .then((res) => {
+          // console.log(res, 'article result') // {code: 0, msg: '', data: {id: 'xxx'}}
+          this.$message.success('文章修改成功')
+          this.$router.push('/article/list')
+        })
+        .catch((err) => {
+          console.error(err)
+          this.$message.error('文章修改失败:' + err.message)
         })
         .finally(() => {
           this.loading = false

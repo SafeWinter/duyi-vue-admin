@@ -86,13 +86,13 @@ export const constantRoutes = [
       {
         path: 'add',
         name: 'ArticleAdd',
-        component: () => import('@/views/articleAdd/index'),
+        component: () => import('@/views/articleDetail/index'),
         meta: { title: '添加文章', icon: 'edit', auth: true }
       },
       {
         path: 'edit/:id',
         name: 'ArticleEdit',
-        component: () => import('@/views/articleEdit/index'),
+        component: () => import('@/views/articleDetail/edit'),
         meta: { title: '编辑文章', icon: 'edit', auth: true },
         hidden: true
       }
