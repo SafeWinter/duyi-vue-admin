@@ -16,3 +16,23 @@ export function deleteArticle(id) {
     url: `/api/blog/${id}`
   })
 }
+
+export function addBlog(data) {
+  return request({
+    url: '/api/blog',
+    method: 'post',
+    data
+  })
+}
+
+export function editBlog(data) {
+  return request({
+    url: `/api/blog/${data.id}`,
+    method: 'put',
+    data
+  })
+}
+
+export function getBlogDetail(id) {
+  return request.get(`/api/blog/${id}`)
+}

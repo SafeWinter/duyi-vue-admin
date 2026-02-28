@@ -115,3 +115,19 @@ export function param2Obj(url) {
   })
   return obj
 }
+
+/**
+ * Validate whether the image URL could be loaded successfully
+ * @param {string} url target image URL to check
+ * @returns true if loaded successfully
+ */
+export function checkImage(url) {
+  return new Promise((resolve) => {
+    const img = new Image()
+
+    img.onload = () => resolve(true) // 加载成功
+    img.onerror = () => resolve(false) // 加载失败
+
+    img.src = url
+  })
+}

@@ -28,7 +28,8 @@
         </template>
       </el-table-column>
       <el-table-column prop="name" label="博客类别" align="center" />
-      <el-table-column prop="articleCount" label="文章数量" />
+      <el-table-column prop="articleCount" label="文章数量" align="center" />
+      <el-table-column prop="order" label="类别等级" align="center" />
       <el-table-column label="操作" align="center" width="150">
         <template v-slot="{ row }">
           <el-tooltip

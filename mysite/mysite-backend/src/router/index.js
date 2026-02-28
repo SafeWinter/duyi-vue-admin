@@ -88,6 +88,13 @@ export const constantRoutes = [
         name: 'ArticleAdd',
         component: () => import('@/views/articleAdd/index'),
         meta: { title: '添加文章', icon: 'edit', auth: true }
+      },
+      {
+        path: 'edit/:id',
+        name: 'ArticleEdit',
+        component: () => import('@/views/articleEdit/index'),
+        meta: { title: '编辑文章', icon: 'edit', auth: true },
+        hidden: true
       }
     ]
   },
@@ -248,7 +255,7 @@ export const constantRoutes = [
 ]
 
 const createRouter = () => new Router({
-  // mode: 'history', // require service support
+  mode: 'history', // require service support
   scrollBehavior: () => ({ y: 0 }),
   routes: constantRoutes
 })

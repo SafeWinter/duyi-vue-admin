@@ -29,10 +29,12 @@
         </el-col>
       </el-row>
     </el-form>
-    <div slot="footer" class="dialog-footer">
-      <el-button @click="hideEditForm">取 消</el-button>
-      <el-button type="primary" @click="submitForm"> 确 定 </el-button>
-    </div>
+    <template #footer>
+      <div class="dialog-footer">
+        <el-button @click="hideEditForm">取 消</el-button>
+        <el-button type="primary" @click="submitForm"> 确 定 </el-button>
+      </div>
+    </template>
   </el-dialog>
 </template>
 

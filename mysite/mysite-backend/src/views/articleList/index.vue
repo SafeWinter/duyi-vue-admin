@@ -64,7 +64,6 @@
               icon="el-icon-edit"
               circle
               size="mini"
-              disabled
               @click="editArticle(row)"
             />
           </el-tooltip>
@@ -194,7 +193,8 @@ export default {
         })
     },
     editArticle(row) {
-      this.$message.info(`编辑文章: ${row.title}`)
+      console.log('target id:', row.id)
+      this.$router.push(`/article/edit/${row.id}`)
     }
   }
 }

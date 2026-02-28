@@ -86,6 +86,7 @@ export default {
       try {
         const { data } = await fetchBanner()
         console.log(data) // {bigImg, description, id, midImg, title}
+        // console.log('urls:', data.flatMap(e => [e.midImg, e.bigImg]))
         this.tableData = data
       } catch (error) {
         this.$message.error(`获取数据失败: ${error.message}`)

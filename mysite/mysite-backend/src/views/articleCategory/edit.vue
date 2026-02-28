@@ -5,7 +5,7 @@
         <el-input v-model="data.name" autocomplete="off" style="width: 60%" />
       </el-form-item>
       <el-form-item label="分类等级" label-width="120px">
-        <el-select v-model.number="data.order" placeholder="请选择分类等级" style="width: 60%">
+        <el-select v-model.number="data.order" placeholder="请选择分类等级1" style="width: 60%">
           <el-option label="一级" :value="1" />
           <el-option label="二级" :value="2" />
           <el-option label="三级" :value="3" />
@@ -14,12 +14,14 @@
         </el-select>
       </el-form-item>
     </el-form>
-    <div slot="footer" class="dialog-footer">
-      <el-button @click="hideEditForm">取 消</el-button>
-      <el-button type="primary" @click="submitForm">
-        确 定
-      </el-button>
-    </div>
+    <template #footer>
+      <div class="dialog-footer">
+        <el-button @click="hideEditForm">取 消</el-button>
+        <el-button type="primary" @click="submitForm">
+          确 定
+        </el-button>
+      </div>
+    </template>
   </el-dialog>
 </template>
 
