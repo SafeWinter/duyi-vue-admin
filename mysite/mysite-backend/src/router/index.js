@@ -125,8 +125,8 @@ export const constantRoutes = [
     children: [
       {
         path: 'list',
-        name: 'Comment',
-        component: () => import('@/views/commentList/index'),
+        name: 'CommentList',
+        component: () => import('@/views/comment/list'),
         meta: { title: '评论管理', icon: 'el-icon-chat-line-round', auth: true }
       }
     ]
@@ -138,7 +138,7 @@ export const constantRoutes = [
       {
         path: 'list',
         name: 'Message',
-        component: () => import('@/views/messageList/index'),
+        component: () => import('@/views/message/list'),
         meta: { title: '留言板', icon: 'message', auth: true }
       }
     ]
