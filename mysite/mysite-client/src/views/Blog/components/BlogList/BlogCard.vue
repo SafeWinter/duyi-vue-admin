@@ -60,7 +60,7 @@ const defaults = {
   title: "标题",
   description: "示例描述示例描述示例描述示例描述示例描述示例描述示例描述示例描述示例描述示例描述示例描述示例描述示例描述示",
   category: {
-    id: 3,
+    id: '3',
     name: "分类3",
   },
   scanNumber: 10,

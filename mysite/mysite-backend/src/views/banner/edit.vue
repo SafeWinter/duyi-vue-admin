@@ -17,14 +17,14 @@
       <el-row>
         <el-col :span="12">
           <!-- 中图展示 -->
-          <el-form-item label="首页中图">
-            <upload v-model="data.midImg" />
+          <el-form-item label="首页中图" class="img-box">
+            <upload v-model="data.midImg" class="img-md" />
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <!-- 大图展示 -->
-          <el-form-item label="首页大图">
-            <upload v-model="data.bigImg" />
+          <el-form-item label="首页大图" class="img-box">
+            <upload v-model="data.bigImg" class="img-bg" />
           </el-form-item>
         </el-col>
       </el-row>
@@ -67,4 +67,17 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+::v-deep .el-form-item__label::after {
+  content: ':';
+  clear: right;
+  user-select: none;
+}
+::v-deep .img-box {
+  text-align: center;
+}
+::v-deep .img-md, ::v-deep .img-bg {
+  width: fit-content;
+  margin: 3em auto;
+}
+</style>

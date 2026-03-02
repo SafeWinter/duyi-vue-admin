@@ -4,7 +4,7 @@ import router from './router';
 import { getMessage } from '@/utils';
 Vue.prototype.$getMessage = getMessage;
 
-import '@/mock';
+// import '@/mock';
 
 import vLoading from './directives/loading';
 Vue.directive('loading', vLoading);

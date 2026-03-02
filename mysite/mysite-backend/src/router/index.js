@@ -74,25 +74,25 @@ export const constantRoutes = [
       {
         path: 'list',
         name: 'ArticleList',
-        component: () => import('@/views/articleList/index'),
+        component: () => import('@/views/article/list'),
         meta: { title: '文章列表', icon: 'list', auth: true }
       },
       {
         path: 'category',
         name: 'ArticleCategory',
-        component: () => import('@/views/articleCategory/index'),
+        component: () => import('@/views/article/category/index'),
         meta: { title: '文章分类', icon: 'el-icon-menu', auth: true }
       },
       {
         path: 'add',
         name: 'ArticleAdd',
-        component: () => import('@/views/articleDetail/index'),
+        component: () => import('@/views/article/add'),
         meta: { title: '添加文章', icon: 'edit', auth: true }
       },
       {
         path: 'edit/:id',
         name: 'ArticleEdit',
-        component: () => import('@/views/articleDetail/edit'),
+        component: () => import('@/views/article/edit'),
         meta: { title: '编辑文章', icon: 'edit', auth: true },
         hidden: true
       }
@@ -108,13 +108,13 @@ export const constantRoutes = [
       {
         path: 'list',
         name: 'ProjectList',
-        component: () => import('@/views/projectList/index'),
+        component: () => import('@/views/project/list'),
         meta: { title: '项目列表', icon: 'el-icon-s-order', auth: true }
       },
       {
         path: 'add',
         name: 'ProjectAdd',
-        component: () => import('@/views/projectAdd/index'),
+        component: () => import('@/views/project/add'),
         meta: { title: '添加项目', icon: 'el-icon-circle-plus', auth: true }
       }
     ]

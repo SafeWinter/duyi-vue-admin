@@ -32,6 +32,9 @@ module.exports = {
   devServer: {
     port: port,
     open: false,
+    hot: false,
+    liveReload: false,
+    watchContentBase: true,
     overlay: {
       warnings: false,
       errors: true
@@ -127,7 +130,7 @@ module.exports = {
                 }
               }
             })
-          // https:// webpack.js.org/configuration/optimization/#optimizationruntimechunk
+          // https://webpack.js.org/configuration/optimization/#optimizationruntimechunk
           config.optimization.runtimeChunk('single')
         }
       )

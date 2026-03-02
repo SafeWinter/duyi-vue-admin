@@ -1,14 +1,14 @@
 <template>
   <Layout>
-    <template #default>
+    <template v-slot:default>
       <div ref="blogBody" class="body-container" v-loading="loading">
         <blog-body :data="blogData" v-if="blogData"/>
         <blog-comment v-if="!loading" />
       </div>
     </template>
-    <template #right>
+    <template v-slot:right>
       <div class="toc-container" v-loading="loading">
-        <blog-toc :toc="toc" v-if="blogData"/>
+        <blog-toc :toc="toc" v-if="toc && toc.length > 0"/>
       </div>
     </template>
   </Layout>
@@ -36,10 +36,13 @@ export default {
       return this.$route.params.id;
     },
     blogData() {
-      return this.data.data;
+      return this.data;
     },
     toc() {
-      return this.blogData.toc;
+      if(!this.blogData) {
+        return [];
+      }
+      return this.blogData.toc || [];
     }
   },
   methods: {

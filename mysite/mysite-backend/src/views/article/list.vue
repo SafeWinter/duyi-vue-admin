@@ -156,8 +156,7 @@ export default {
       this.loading = false
       // console.log(data); // {rows, total}
       // 临时渲染图片，后续需要替换为后端返回的图片 URL
-      data.rows.forEach(r => { r.thumb = this.tempUrl })
-
+      // data.rows.forEach(r => { r.thumb = this.tempUrl })
       this.tableData = [...data.rows]
       this.total = data.total
     },

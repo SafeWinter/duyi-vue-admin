@@ -25,27 +25,34 @@ export default {
   },
   computed: {
     tocTree() {
-      // console.log("toc:", this.toc);
       return renameToc(this.toc);
     },
     noData(){
       return this.toc && this.toc.length === 0;
     },
     bookMarks() {
-      const navTitles = (treeNodes, marks = []) => {
-        for(const node of treeNodes) {
-          const {id, children} = node;
-          const iDom = document.querySelector(`#${id}`);
-          if(iDom) {
-            marks.push(iDom);
+      try {
+        const navTitles = (treeNodes, marks = []) => {
+          for(const node of treeNodes) {
+            const {id, children} = node;
+            const iDom = document.querySelector(`#${id}`);
+            if(iDom) {
+              marks.push(iDom);
+            }
+            if(children && Array.isArray(children) && children.length > 0) {
+              navTitles(children, marks);
+            }
           }
-          if(children && Array.isArray(children) && children.length > 0) {
-            navTitles(children, marks);
-          }
+          return marks;
+        };
+        return navTitles(this.tocTree);
+      } catch (err) {
+        if(err.message.indexOf('querySelector') > -1) {
+          console.warn('invalid toc id::', err.message);
+          return [];
         }
-        return marks;
-      };
-      return navTitles(this.tocTree);
+        throw err;
+      }
     }
   },
   data() {

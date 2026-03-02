@@ -14,7 +14,7 @@
         <dt class="term">评论</dt>
         <dd>{{ data.commentNumber }}</dd>
       </a>
-      <router-link :to="{
+      <router-link v-if="data.category && data.category.id" :to="{
         name: 'CategorizedArticle',
         params: {
           categoryId: data.category.id
@@ -22,6 +22,7 @@
       }">
         {{ data.category.name }}
       </router-link>
+      <span v-else>未分类</span>
     </section>
     <section class="markdown-body" v-html="data.htmlContent"></section>
   </div>
