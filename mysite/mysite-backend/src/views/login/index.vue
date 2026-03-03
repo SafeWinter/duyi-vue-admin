@@ -55,7 +55,7 @@
             <svg-icon icon-class="table" />
           </span>
           <el-input
-            ref="captcha"
+            ref="captchaInput"
             v-model="loginForm.captcha"
             placeholder="请输入验证码"
             name="captcha"
@@ -114,13 +114,13 @@ export default {
             trigger: 'blur',
             validator: requiredField,
             message: '请输入登录密码'
-          },
-          {
-            min: 6,
-            max: 20,
-            trigger: 'blur',
-            message: '登录密码长度必须在 6 - 20 之间'
           }
+          // {
+          //   min: 6,
+          //   max: 20,
+          //   trigger: 'blur',
+          //   message: '登录密码长度必须在 6 - 20 之间'
+          // }
         ],
         captcha: [
           {
@@ -153,6 +153,7 @@ export default {
     updateCaptcha() {
       getCaptcha().then((captcha) => {
         this.captcha = captcha
+        this.$nextTick(() => this.$refs.captchaInput.focus())
       })
     },
     showPwd() {
@@ -195,8 +196,6 @@ export default {
     },
     resetForm() {
       this.loginForm.captcha = ''
-      this.loginForm.loginId = ''
-      this.loginForm.loginPwd = ''
       this.updateCaptcha()
     }
   }

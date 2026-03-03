@@ -21,3 +21,11 @@ export function userLogout() {
     method: 'post'
   })
 }
+
+export function updateProfile(data) {
+  return request({
+    url: '/api/admin',
+    method: 'put',
+    data
+  })
+}

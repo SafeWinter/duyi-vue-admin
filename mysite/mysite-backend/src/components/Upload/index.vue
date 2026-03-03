@@ -28,6 +28,17 @@ export default {
       default: ''
     }
   },
+  data() {
+    return {
+      validMIMEType: [
+        'image/jpeg',
+        'image/png',
+        'image/x-icon', // ico 格式的一种 MIME 类型
+        'image/vnd.microsoft.icon', // ico 格式的另一种 MIME 类型
+        'image/ico' // 某些系统可能使用的 ico MIME 类型
+      ]
+    }
+  },
   computed: {
     headers() {
       return {
@@ -41,16 +52,16 @@ export default {
       this.$emit('input', res.data) // 将上传成功的图片URL传递给父组件
     },
     beforeAvatarUpload(file) {
-      const isJPG = file.type === 'image/jpeg' || file.type === 'image/png'
+      const validMIME = this.validMIMEType.includes(file.type)
       const isLt2M = file.size / 1024 / 1024 < 2
 
-      if (!isJPG) {
-        this.$message.error('只能上传 JPG/PNG 格式的图片!')
+      if (!validMIME) {
+        this.$message.error('只能上传 JPG/PNG/ICO 格式的图片!')
       }
       if (!isLt2M) {
         this.$message.error('上传图片大小不能超过 2MB!')
       }
-      return isJPG && isLt2M
+      return validMIME && isLt2M
     }
   }
 }

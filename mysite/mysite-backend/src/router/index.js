@@ -167,6 +167,20 @@ export const constantRoutes = [
       }
     ]
   },
+  {
+    path: '/profile',
+    component: Layout,
+    redirect: '/profile/index',
+    children: [
+      {
+        path: 'index',
+        name: 'Profile',
+        component: () => import('@/views/profile/index'),
+        meta: { title: '个人中心', icon: 'el-icon-s-tools', auth: true },
+        hidden: true
+      }
+    ]
+  },
   // {
   //   path: '/form',
   //   component: Layout,

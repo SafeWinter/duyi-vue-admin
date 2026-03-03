@@ -92,6 +92,7 @@ exports.multipart = {
     '.webp',
     '.tif',
     'svg',
+    '.ico'
   ],
   mode: 'file',
   tmpdir: path.resolve(__dirname, '../app', './public', 'upload_temp'),

@@ -53,6 +53,7 @@ const actions = {
         const { data } = resp
         commit('SET_USER', data)
         commit('SET_NAME', data.name)
+        commit('SET_TOKEN', getToken()) // Bug: Now, the token has been written into localStorage by response interceptor
         commit('SET_AVATAR', 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif')
         resolve()
       }).catch(reject)
@@ -67,7 +68,8 @@ const actions = {
         const { data } = response
 
         if (!data) {
-          return reject('Token 校验失败，请重新登录！')
+          const res = JSON.parse(response)
+          return reject('Token 校验失败，请重新登录！' + res.msg)
         }
 
         const { name } = data
