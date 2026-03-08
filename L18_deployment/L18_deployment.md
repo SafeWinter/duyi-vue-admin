@@ -329,3 +329,300 @@ ps -ef | grep -v grep | grep mysite-server
 
 
 
+## 3 前后台 Vue 项目部署
+
+这部分最难的是 `Nginx` 的正确配置：按照视频要求，需要在 `/admin/` 下跳转后台系统，因此后台的 `vue.config.js` 需要相应调整：
+
+```js
+module.exports = {
+  publicPath: '/admin/',
+  outputDir: 'dist',
+  assetsDir: 'static',
+}
+```
+
+由于上传了所有代码到 `Gitee`，因此可以直接在云端打包项目：
+
+```bash
+# 前台打包
+cd ~/mysite/mysite-client/
+npm run build
+
+# 后台打包
+cd ~/mysite/mysite-backend/
+npm run build:prod
+```
+
+这样就分别得到了前后台的 `dist` 打包结果（备用）。
+
+
+
+### 3.1 安装 Nginx
+
+避坑：不要使用云平台自带的 `Nginx`，有大坑：
+
+![](../assets/18.43.png)
+
+应该到官网下载页 `https://nginx.org/en/download.html` 安装最新稳定版（`v1.28.2`）：
+
+![](../assets/18.44.png)
+
+上传到服务器后，解压到当前目录：
+
+```shell
+tar zxvf nginx-1.28.2.tar.gz
+cd nginx-1.28.2
+sudo ./configure \
+  --prefix=/usr/local/nginx \
+  --sbin-path=/usr/sbin/nginx \
+  --conf-path=/usr/local/nginx/conf/nginx.conf \
+  --pid-path=/var/run/nginx.pid \
+  --user=nginx \
+  --group=nginx \
+  --with-http_ssl_module \
+  --with-http_v2_module \
+  --with-http_stub_status_module \
+  --with-http_gzip_static_module \
+  --with-stream
+make install
+# 运行 Nginx
+nginx -c /usr/local/nginx/conf/nginx.conf
+```
+
+接下来是最关键的一步：修改 `Nginx` 的配置文件（`/usr/local/nginx/conf/nginx.conf`，感谢美年达助教的耐心答疑）：
+
+```bash
+
+#user  nobody;
+worker_processes  1;
+
+#error_log  logs/error.log;
+#error_log  logs/error.log  notice;
+#error_log  logs/error.log  info;
+
+#pid        logs/nginx.pid;
+
+
+events {
+    worker_connections  1024;
+}
+
+
+http {
+    include       mime.types;
+    default_type  application/octet-stream;
+
+    #log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+    #                  '$status $body_bytes_sent "$http_referer" '
+    #                  '"$http_user_agent" "$http_x_forwarded_for"';
+
+    #access_log  logs/access.log  main;
+
+    sendfile        on;
+    #tcp_nopush     on;
+
+    #keepalive_timeout  0;
+    keepalive_timeout  65;
+
+    #gzip  on;
+
+    server {
+        listen       80;
+        server_name  localhost;
+
+        #charset koi8-r;
+
+        #access_log  logs/host.access.log  main;
+
+        # 前台 - / 路径
+        location / {
+            root   html;
+            index  index.html index.htm;
+            try_files $uri $uri/ /index.html;
+        }
+
+        location /api {
+            proxy_pass http://127.0.0.1:7001;
+        }
+
+        location /res {
+            proxy_pass http://127.0.0.1:7001;
+        }
+
+        location /static/avatar {
+            proxy_pass http://127.0.0.1:7001;
+        }
+        location /static/upload {
+            proxy_pass http://127.0.0.1:7001;
+        }
+
+        # /admin -> /admin/
+        location = /admin { return 301 /admin/; }
+
+        # 静态资源：必须命中，不允许回退到 html
+        location ^~ /admin/static/ {
+          alias /usr/local/nginx/html/admin/static/;
+          try_files $uri =404;
+          # 可选：加正确类型（一般 nginx 自带 mime.types 就行）
+          # include mime.types;
+        }
+
+        # SPA 入口：只处理路由回退
+        location ^~ /admin/ {
+          alias /usr/local/nginx/html/admin/;
+          try_files $uri $uri/ /admin/index.html;
+        }
+
+        # location = /admin {
+        #     return 301 /admin/;
+        # }
+        # 精确匹配 /admin，转发到后端根路径
+        # location = /admin {
+        #     proxy_pass http://localhost:8080/;
+        #     proxy_set_header Host $host;
+        #     proxy_set_header X-Real-IP $remote_addr;
+        #     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        # }
+
+        # location ^~ /admin/ {
+        #     proxy_pass http://127.0.0.1:8080/; # 注意这个结尾/
+        # }
+        # 前缀匹配 /admin/，转发到后端并去掉 /admin 前缀
+        # location ^~ /admin/ {
+        #     proxy_pass http://localhost:8080/;
+        #     proxy_set_header Host $host;
+        #     proxy_set_header X-Real-IP $remote_addr;
+        #     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        # }
+
+        #error_page  404              /404.html;
+
+        # redirect server error pages to the static page /50x.html
+        #
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+            root   html;
+        }
+
+        # proxy the PHP scripts to Apache listening on 127.0.0.1:80
+        #
+        #location ~ \.php$ {
+        #    proxy_pass   http://127.0.0.1;
+        #}
+
+        # pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
+        #
+        #location ~ \.php$ {
+        #    root           html;
+        #    fastcgi_pass   127.0.0.1:9000;
+        #    fastcgi_index  index.php;
+        #    fastcgi_param  SCRIPT_FILENAME  /scripts$fastcgi_script_name;
+        #    include        fastcgi_params;
+        #}
+
+        # deny access to .htaccess files, if Apache's document root
+        # concurs with nginx's one
+        #
+        #location ~ /\.ht {
+        #    deny  all;
+        #}
+    }
+
+    # another virtual host using mix of IP-, name-, and port-based configuration
+    #
+    #server {
+    #    listen       8000;
+    #    listen       somename:8080;
+    #    server_name  somename  alias  another.alias;
+
+    #    location / {
+    #        root   html;
+    #        index  index.html index.htm;
+    #    }
+    #}
+
+
+    # HTTPS server
+    #
+    #server {
+    #    listen       443 ssl;
+    #    server_name  localhost;
+
+    #    ssl_certificate      cert.pem;
+    #    ssl_certificate_key  cert.key;
+
+    #    ssl_session_cache    shared:SSL:1m;
+    #    ssl_session_timeout  5m;
+
+    #    ssl_ciphers  HIGH:!aNULL:!MD5;
+    #    ssl_prefer_server_ciphers  on;
+
+    #    location / {
+    #        root   html;
+    #        index  index.html index.htm;
+    #    }
+    #}
+
+}
+
+```
+
+如果要将后台项目部署到 `8080` 端口，则需要在 `http` 节点下再添加一组 `server` 配置：
+
+```bash
+server {
+    listen        8080;
+    server_name   localhost1;
+
+    location / {
+        root   admin;
+        index  index.html index.htm;
+        try_files $uri $uri/ /index.html;
+    }
+
+    location /api {
+        proxy_pass http://127.0.0.1:7001;
+    }
+    location /res {
+        proxy_pass http://127.0.0.1:7001;
+    }
+    location /static/upload {
+        proxy_pass http://127.0.0.1:7001;
+    }
+    location /static/avatar {
+        proxy_pass http://127.0.0.1:7001;
+    }
+
+    error_page   500 502 503 504  /50x.html;
+    location = /50x.html {
+        root html;
+    } 
+}
+```
+
+然后刷新 `Nginx`：
+
+```bash
+cd /usr/local/nginx/sbin/
+./nginx -s reload
+```
+
+最后开通 `80` 端口，在本地浏览器尝试访问：
+
+前台：
+
+![](../assets/18.45.png)
+
+后台：
+
+![](../assets/18.46.png)
+
+> [!tip]
+>
+> 从远程下载文件到本地桌面：
+>
+> ```bash
+> scp root@<YOUR_IP_ADDR>:~/data.txt F:\mydesktop\data123.txt
+> ```
+>
+> 中途输入密码即可。
